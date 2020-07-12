@@ -1,0 +1,48 @@
+server:
+  port: 9999
+
+spring:
+  application:
+    name: batch-test
+  aop:
+    auto: true
+  main:
+    allow-bean-definition-overriding: true
+
+  kafka:
+    producer:
+      bootstrap-servers: 127.0.0.1:9092
+      batch-size: 16785                                   #一次最多发送数据量
+      retries: 1                                          #发送失败后的重复发送次数
+      buffer-memory: 33554432                             #32M批处理缓冲区
+      linger: 1                                           #如果不设置linger.ms，其默认值就是0，也就说即使batch不满也会发送出去。可现在设置了linger.ms，这样这些本该早就发出去的消息被迫至少等待了linger.ms时间，所以说增加了发送方的延迟
+    consumer:
+      bootstrap-servers: 127.0.0.1:9092
+      auto-offset-reset: earliest                           #最早未被消费的offset earliest
+      max-poll-records: 10000                              #批量消费一次最大拉取的数据量
+      enable-auto-commit: false                           #是否开启自动提交
+      auto-commit-interval: 1000                          #自动提交的间隔时间
+      session-timeout: 20000                              #连接超时时间
+      max-poll-interval: 15000                            #手动提交设置与poll的心跳数,如果消息队列中没有消息，等待毫秒后，调用poll()方法。如果队列中有消息，立即消费消息，每次消费的消息的多少可以通过max.poll.records配置。
+      max-partition-fetch-bytes: 15728640                 #设置拉取数据的大小,15M
+    listener:
+      batch-listener: true                                #是否开启批量消费，true表示批量消费
+      concurrencys: 1,3,4,6,8                                   #设置消费的线程数
+      poll-timeout: 1000
+
+db:
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  jdbcUrl: jdbc:mysql://121.40.186.147:3306/normcore?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowMultiQueries=true&rewriteBatchedStatements=true
+  username: root
+  password: xzx123SB
+
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:com.hemavip.batchtest.mapper/*.xml
+  type-aliases-package: com.hemavip.batchtest.model
+  #开启驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
+logging:
+  level:
+    com.hemavip: warn

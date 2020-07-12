@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hemavip.batchtest.mapper.BatchTestMapper">
+    <resultMap id="BaseResultMap" type="com.hemavip.batchtest.model.BatchTest">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="test_name" property="testName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, test_name, create_time, update_time
+  </sql>
+    <update id="update" parameterType="BatchTest">
+        update batch_test
+        <set>
+            <if test="testName != null">
+                test_name = #{testName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateBatch" parameterType="java.util.List">
+        update batch_test
+        SET test_name =
+        <foreach collection="list" item="item" index="index"
+                 separator=" " open="case id" close="end">
+            when #{item.id} then #{item.testName}
+        </foreach>
+        , create_time =
+        <foreach collection="list" item="item" index="index"
+                 separator=" " open="case id" close="end">
+            when #{item.id} then #{item.createTime}
+        </foreach>
+        , update_time =
+        <foreach collection="list" item="item" index="index"
+                 separator=" " open="case id" close="end">
+            when #{item.id} then #{item.updateTime}
+        </foreach>
+        where id in (
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            #{item.id}
+        </foreach>
+        )
+    </update>
+
+    <update id="updateBatchList" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update batch_test
+            <set>
+            <if test="item.testName != null">
+                test_name = #{item.testName},
+            </if>
+            <if test="item.createTime != null">
+                create_time = #{item.createTime},
+            </if>
+            <if test="item.updateTime != null">
+                update_time = #{item.updateTime},
+            </if>
+            </set>
+            where id = #{item.id}
+        </foreach>
+    </update>
+
+    <update id="truncate">
+        truncate table batch_test
+    </update>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(1) from batch_test
+    </select>
+</mapper>
