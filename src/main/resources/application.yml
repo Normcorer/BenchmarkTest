@@ -33,8 +33,8 @@ spring:
 db:
   driver-class-name: com.mysql.cj.jdbc.Driver
   jdbcUrl: jdbc:mysql://121.40.186.147:3306/normcore?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowMultiQueries=true&rewriteBatchedStatements=true
-  username: root
-  password: xzx123SB
+  username: yourUserName
+  password: yourPassword
 
 mybatis:
   #mapper配置文件
